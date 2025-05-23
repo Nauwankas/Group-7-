@@ -32,32 +32,30 @@ def calculate_total_distance(route):
         total += distance_matrix[route[i]][route[i+1]]
     return total
 
-def find_all_routes():
+def display_all_routes_and_find_optimal():
     start = "Nairobi"
     other_towns = [town for town in towns if town != start]
-    all_routes = []
     min_distance = float('inf')
     best_route = []
 
-    print("All Possible Routes and Distances:\n")
+    print("All Possible Routes:\n")
 
     for perm in permutations(other_towns):
         route = [start] + list(perm) + [start]
         distance = calculate_total_distance(route)
-        all_routes.append((route, distance))
-        print(" -> ".join(route) + f" | Total Distance: {distance} km")
+        print(" -> ".join(route), f"= {distance} km")
         if distance < min_distance:
             min_distance = distance
             best_route = route
 
-    return best_route, min_distance
+    print("\n" + "=" * 60)
+    print("Optimal Route:")
+    print(" -> ".join(best_route))
+    print(f"Total Distance: {min_distance} km")
+    print("=" * 60)
+    print()
 
 if __name__ == "__main__":
     print_project_description()
-    optimal_route, optimal_distance = find_all_routes()
-    print("\n" + "=" * 60)
-    print("Optimal Route:")
-    print(" -> ".join(optimal_route))
-    print(f"Total Distance: {optimal_distance} km")
-    print("=" * 60 + "\n")
+    display_all_routes_and_find_optimal()
 
