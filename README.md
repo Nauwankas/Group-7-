@@ -1,51 +1,57 @@
 from itertools import permutations
 
-# List of towns
+def print_project_description():
+    print("=" * 60)
+    print("Kenya Travelling Salesman Problem (TSP) Solver".center(60))
+    print("=" * 60)
+    print("Counties Involved: Nairobi, Meru, Nyeri, Nandi, Kericho, Nakuru\n")
+    print("Goal:")
+    print("- Start at Nairobi")
+    print("- Visit all other towns once")
+    print("- Return to Nairobi")
+    print("- Find the shortest route (minimum total distance)\n")
+    print("Instructions:")
+    print("1. Make sure Python is installed.")
+    print("2. Run this script: python kenya_tsp.py")
+    print("3. You'll get the optimal route and total distance.\n")
+
 towns = ["Nairobi", "Meru", "Nyeri", "Nandi", "Kericho", "Nakuru"]
 
-# Distance matrix (in km)
-# Matrix[i][j] represents distance from towns[i] to towns[j]
-distance_matrix = [
-    # Nai  Meru  Nyeri Nandi Kericho Nakuru
-    [  0,   225,   150,  310,   275,   160],  # Nairobi
-    [225,     0,   105,  330,   300,   210],  # Meru
-    [150,   105,     0,  290,   260,   170],  # Nyeri
-    [310,   330,   290,    0,    80,   190],  # Nandi
-    [275,   300,   260,   80,     0,   120],  # Kericho
-    [160,   210,   170,  190,   120,     0],  # Nakuru
-]
+distance_matrix = {
+    "Nairobi": {"Meru": 225, "Nyeri": 150, "Nandi": 310, "Kericho": 275, "Nakuru": 160},
+    "Meru": {"Nairobi": 225, "Nyeri": 105, "Nandi": 330, "Kericho": 300, "Nakuru": 210},
+    "Nyeri": {"Nairobi": 150, "Meru": 105, "Nandi": 290, "Kericho": 260, "Nakuru": 170},
+    "Nandi": {"Nairobi": 310, "Meru": 330, "Nyeri": 290, "Kericho": 80, "Nakuru": 190},
+    "Kericho": {"Nairobi": 275, "Meru": 300, "Nyeri": 260, "Nandi": 80, "Nakuru": 120},
+    "Nakuru": {"Nairobi": 160, "Meru": 210, "Nyeri": 170, "Nandi": 190, "Kericho": 120}
+}
 
-# Function to calculate the total distance of a route
-def calculate_total_distance(route, distance_matrix):
-    total_distance = 0
+def calculate_total_distance(route):
+    total = 0
     for i in range(len(route) - 1):
-        total_distance += distance_matrix[route[i]][route[i+1]]
-    return total_distance
+        total += distance_matrix[route[i]][route[i+1]]
+    return total
 
-# Index of Nairobi
-start_index = towns.index("Nairobi")
+def find_optimal_route():
+    start = "Nairobi"
+    other_towns = [town for town in towns if town != start]
+    min_distance = float('inf')
+    best_route = []
 
-# Generate all permutations of intermediate towns (excluding Nairobi)
-town_indices = list(range(len(towns)))
-intermediate_indices = town_indices[1:]  # exclude Nairobi
+    for perm in permutations(other_towns):
+        route = [start] + list(perm) + [start]
+        distance = calculate_total_distance(route)
+        if distance < min_distance:
+            min_distance = distance
+            best_route = route
 
-min_distance = float('inf')
-optimal_route = None
+    return best_route, min_distance
 
-# Try all permutations of the intermediate towns
-for perm in permutations(intermediate_indices):
-    # Complete route: start at Nairobi -> permuted towns -> back to Nairobi
-    route = [start_index] + list(perm) + [start_index]
-    distance = calculate_total_distance(route, distance_matrix)
-
-    if distance < min_distance:
-        min_distance = distance
-        optimal_route = route
-
-# Convert indices back to town names
-optimal_town_route = [towns[i] for i in optimal_route]
-
-# Output
-print("Optimal Route:")
-print(" -> ".join(optimal_town_route))
-print(f"Total Distance: {min_distance} km")
+if __name__ == "__main__":
+    print_project_description()
+    route, distance = find_optimal_route()
+    print("Optimal Route:")
+    print(" -> ".join(route))
+    print(f"Total Distance: {distance} km\n")
+    print("=" * 60)
+    print()
