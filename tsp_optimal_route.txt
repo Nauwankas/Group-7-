@@ -1,0 +1,4 @@
+Kenya TSP - Optimal Route
+Nairobi -> Nyeri -> Meru -> Nandi -> Kericho -> Nakuru -> Nairobi
+Total Distance: 945 km
+Routes Checked: 120
