@@ -56,7 +56,7 @@ def display_all_routes_and_find_optimal():
             min_distance = distance
             best_route = route
 
-    # Display the optimal route
+    # Display the optimal route, after checking all routes
     print("\n" + "=" * 60)
     print("Optimal Route:")
     print(" -> ".join(best_route))
