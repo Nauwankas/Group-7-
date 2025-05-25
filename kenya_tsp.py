@@ -16,7 +16,7 @@ def print_project_description():
     print("2. Run this script: python kenya_tsp.py")
     print("3. You'll get the optimal route and total distance.\n")
 
-# List of towns to visit
+#Towns to be visited 
 towns = ["Nairobi", "Meru", "Nyeri", "Nandi", "Kericho", "Nakuru"]
 
 # Dictionary containing distances between each pair of towns
