@@ -1,6 +1,5 @@
 from itertools import permutations
 
-# Function to print project description and instructions
 def print_project_description():
     print("=" * 60)
     print("Kenya Travelling Salesman Problem (TSP) Solver".center(60))
@@ -14,57 +13,85 @@ def print_project_description():
     print("Instructions:")
     print("1. Make sure Python is installed.")
     print("2. Run this script: python kenya_tsp.py")
-    print("3. You'll get the optimal route and total distance.\n")
+    print("3. You'll need to input distances between towns.")
+    print("4. You'll get the optimal route and total distance.\n")
 
-#Towns to be visited 
+# Towns to be visited 
 towns = ["Nairobi", "Meru", "Nyeri", "Nandi", "Kericho", "Nakuru"]
 
-# Dictionary containing distances between each pair of towns
-distance_matrix = {
-    "Nairobi": {"Meru": 225, "Nyeri": 150, "Nandi": 310, "Kericho": 275, "Nakuru": 160},
-    "Meru": {"Nairobi": 225, "Nyeri": 105, "Nandi": 330, "Kericho": 300, "Nakuru": 210},
-    "Nyeri": {"Nairobi": 150, "Meru": 105, "Nandi": 290, "Kericho": 260, "Nakuru": 170},
-    "Nandi": {"Nairobi": 310, "Meru": 330, "Nyeri": 290, "Kericho": 80, "Nakuru": 190},
-    "Kericho": {"Nairobi": 275, "Meru": 300, "Nyeri": 260, "Nandi": 80, "Nakuru": 120},
-    "Nakuru": {"Nairobi": 160, "Meru": 210, "Nyeri": 170, "Nandi": 190, "Kericho": 120}
-}
+def get_user_distances():
+    
+    #Gets distances between towns from user input.
+    #Returns a distance matrix dictionary with symmetric distances.
+   
+    distance_matrix = {town: {} for town in towns}
+    
+    print("\nEnter distances between towns (in kilometers):")
+    print("Note: Distance from Town A to Town B will be the same as Town B to Town A")
+    
+    # Loop through all unique pairs of towns
+    for i in range(len(towns)):
+        for j in range(i + 1, len(towns)):
+            town1 = towns[i]
+            town2 = towns[j]
+            
+            while True:
+                try:
+                    distance = float(input(f"Distance from {town1} to {town2}: "))
+                    if distance <= 0:
+                        print("Distance must be positive. Please try again.")
+                        continue
+                        
+                    # Set distance in both directions
+                    distance_matrix[town1][town2] = distance
+                    distance_matrix[town2][town1] = distance
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+    
+    return distance_matrix
+    #Function to calculate total distance of a given route using the provided distance matrix.
 
-# Function to calculate total distance of a given route
-def calculate_total_distance(route):
+def calculate_total_distance(route, distance_matrix):
+    
+    
     total = 0
     for i in range(len(route) - 1):
         total += distance_matrix[route[i]][route[i+1]]
     return total
 
-# Function to display all possible routes and find the optimal one
-def display_all_routes_and_find_optimal():
-    start = "Nairobi"  # Starting point
-    other_towns = [town for town in towns if town != start]  # List of towns excluding start
-    min_distance = float('inf')  # Initialize with infinity
-    best_route = []  # To store the shortest route
+def display_all_routes_and_find_optimal(distance_matrix):
+    """
+    Displays all possible routes and finds the optimal one.
+    Uses the provided distance matrix for calculations.
+    """
+    start = "Nairobi"
+    other_towns = [town for town in towns if town != start]
+    min_distance = float('inf')
+    best_route = []
 
-    print("All Possible Routes:\n")
+    print("\nAll Possible Routes:\n")
 
-    # Generate all permutations of towns and calculate distance
     for perm in permutations(other_towns):
-        route = [start] + list(perm) + [start]  # Full route including return to start
-        distance = calculate_total_distance(route)  # Calculate total distance for route
-        print(" -> ".join(route), f"= {distance} km")  # Print route and distance
+        route = [start] + list(perm) + [start]
+        distance = calculate_total_distance(route, distance_matrix)
+        print(" -> ".join(route), f"= {distance} km")
 
-        # Check if current route is shorter than the previously found shortest
         if distance < min_distance:
             min_distance = distance
             best_route = route
 
-    # Display the optimal route
     print("\n" + "=" * 60)
     print("Optimal Route:")
     print(" -> ".join(best_route))
     print(f"Total Distance: {min_distance} km")
     print("=" * 60)
-    print()
 
-# Main execution
 if __name__ == "__main__":
     print_project_description()
-    display_all_routes_and_find_optimal()
+    
+    # Get distances from user
+    distance_matrix = get_user_distances()
+    
+    # Pass the user-provided distance matrix to the route finder
+    display_all_routes_and_find_optimal(distance_matrix)
