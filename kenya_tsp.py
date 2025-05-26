@@ -1,7 +1,7 @@
 from itertools import permutations
 import matplotlib.pyplot as plt
 
-# Function to print project description and instructions
+# Function print project description and instructions
 def print_project_description():
     print("=" * 60)
     print("Kenya Travelling Salesman Problem (TSP) Solver".center(60))
