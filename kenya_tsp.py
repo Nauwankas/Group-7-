@@ -24,8 +24,7 @@ def get_user_distances():
     #Gets distances between towns from user input.
     #Returns a distance matrix dictionary with symmetric distances.
    
-    distance_matrix = {town: {} for town in towns}
-    
+    distance_matrix = {town: {} for town in towns}    
     print("\nEnter distances between towns (in kilometers):")
     print("Note: Distance from Town A to Town B will be the same as Town B to Town A")
     
@@ -50,18 +49,17 @@ def get_user_distances():
                     print("Invalid input. Please enter a number.")
     
     return distance_matrix
-    #Function to calculate total distance of a given route using the provided distance matrix.
-
-def calculate_total_distance(route, distance_matrix):
     
+ #Function to calculate total distance of a given route using the provided distance matrix.
+def calculate_total_distance(route, distance_matrix):  
     
     total = 0
     for i in range(len(route) - 1):
         total += distance_matrix[route[i]][route[i+1]]
     return total
 
-    #Function to display all possible routes and find the optimal one.
-    #Uses the provided distance matrix for calculations.
+#Function to display all possible routes and find the optimal one.
+ #Uses the provided distance matrix for calculations.
 def display_all_routes_and_find_optimal(distance_matrix):    
     start = "Nairobi"
     other_towns = [town for town in towns if town != start]
