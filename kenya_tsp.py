@@ -60,11 +60,9 @@ def calculate_total_distance(route, distance_matrix):
         total += distance_matrix[route[i]][route[i+1]]
     return total
 
-def display_all_routes_and_find_optimal(distance_matrix):
-    """
-    Displays all possible routes and finds the optimal one.
-    Uses the provided distance matrix for calculations.
-    """
+    #Function to display all possible routes and find the optimal one.
+    #Uses the provided distance matrix for calculations.
+def display_all_routes_and_find_optimal(distance_matrix):    
     start = "Nairobi"
     other_towns = [town for town in towns if town != start]
     min_distance = float('inf')
