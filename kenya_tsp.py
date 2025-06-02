@@ -1,95 +1,139 @@
+import googlemaps
 from itertools import permutations
 import matplotlib.pyplot as plt
+from tabulate import tabulate
+import time
+import webbrowser
 
-# Function print project description and instructions
+# Project description
 def print_project_description():
-    print("=" * 60)
-    print("Kenya Travelling Salesman Problem (TSP) Solver".center(60))
-    print("=" * 60)
+    print("=" * 70)
+    print("Kenya Travelling Salesman Problem (TSP) Solver".center(70))
+    print("=" * 70)
     print("Counties Involved: Nairobi, Meru, Nyeri, Nandi, Kericho, Nakuru\n")
     print("Goal:")
     print("- Start at Nairobi")
     print("- Visit all other towns once")
     print("- Return to Nairobi")
-    print("- Find the shortest route (minimum total distance)\n")
-    print("Instructions:")
-    print("1. Make sure Python is installed.")
-    print("2. Run this script: python kenya_tsp.py")
-    print("3. You'll get the optimal route and total distance.\n")
+    print("- Find the shortest route using real road distances via Google Maps API\n")
 
-# Towns and their coordinates (for visualization only)
+# Coordinates
 town_coordinates = {
-    "Nairobi": (0, 0),
-    "Meru": (2, 4),
-    "Nyeri": (1, 3),
-    "Nandi": (-4, 6),
-    "Kericho": (-3, 4),
-    "Nakuru": (-1, 2)
+    "Nairobi": (36.8219, -1.2921),
+    "Meru": (37.6525, 0.0463),
+    "Nyeri": (36.9510, -0.4197),
+    "Nandi": (35.1531, 0.1209),
+    "Kericho": (35.2833, -0.3667),
+    "Nakuru": (36.0800, -0.3031)
 }
 
 towns = list(town_coordinates.keys())
 
-# Distance matrix
-distance_matrix = {
-    "Nairobi": {"Meru": 225, "Nyeri": 150, "Nandi": 310, "Kericho": 275, "Nakuru": 160},
-    "Meru": {"Nairobi": 225, "Nyeri": 105, "Nandi": 330, "Kericho": 300, "Nakuru": 210},
-    "Nyeri": {"Nairobi": 150, "Meru": 105, "Nandi": 290, "Kericho": 260, "Nakuru": 170},
-    "Nandi": {"Nairobi": 310, "Meru": 330, "Nyeri": 290, "Kericho": 80, "Nakuru": 190},
-    "Kericho": {"Nairobi": 275, "Meru": 300, "Nyeri": 260, "Nandi": 80, "Nakuru": 120},
-    "Nakuru": {"Nairobi": 160, "Meru": 210, "Nyeri": 170, "Nandi": 190, "Kericho": 120}
-}
+# Build distance matrix using coordinates
+def build_distance_matrix(api_key):
+    gmaps = googlemaps.Client(key=api_key)
+    distance_matrix = {town: {} for town in towns}
+    
+    for from_town in towns:
+        for to_town in towns:
+            if from_town == to_town:
+                distance_matrix[from_town][to_town] = 0
+                continue
+            try:
+                result = gmaps.distance_matrix(
+                    origins=[town_coordinates[from_town][::-1]],
+                    destinations=[town_coordinates[to_town][::-1]],
+                    mode="driving",
+                    units="metric"
+                )
+                element = result['rows'][0]['elements'][0]
+                if element['status'] == 'OK':
+                    distance = element['distance']['value'] / 1000  # meters to km
+                    distance_matrix[from_town][to_town] = round(distance, 1)
+                else:
+                    distance_matrix[from_town][to_town] = float('inf')
+            except Exception as e:
+                print(f"Error between {from_town} and {to_town}: {e}")
+                distance_matrix[from_town][to_town] = float('inf')
 
-def calculate_total_distance(route):
-    return sum(distance_matrix[route[i]][route[i+1]] for i in range(len(route) - 1))
+    return distance_matrix
 
-# Function to visualize a given route
-def visualize_route(route, title="Route", color='blue', show_plot=True):
+# Compute total distance
+def calculate_total_distance(route, matrix):
+    total = 0
+    for i in range(len(route) - 1):
+        dist = matrix[route[i]][route[i + 1]]
+        if dist == float('inf'):
+            return float('inf')
+        total += dist
+    return total
+
+# Plot best route
+def plot_best_route(route, distance):
     x = [town_coordinates[t][0] for t in route]
     y = [town_coordinates[t][1] for t in route]
 
-    plt.plot(x, y, marker='o', color=color, linewidth=2)
+    plt.figure(figsize=(8, 6))
+    plt.plot(x, y, marker='o', linestyle='-', color='green', linewidth=2)
     for i, town in enumerate(route):
-        plt.text(x[i], y[i]+0.2, town, ha='center', fontsize=9)
+        plt.text(x[i], y[i] + 0.05, town, ha='center')
 
-    plt.title(title)
-    plt.xlabel("X")
-    plt.ylabel("Y")
+    plt.title(f"Optimal Route ({distance:.1f} km)")
+    plt.xlabel("Longitude")
+    plt.ylabel("Latitude")
     plt.grid(True)
-    if show_plot:
-        plt.show()
+    plt.tight_layout()
+    plt.show()
 
-# Main TSP logic with visualization
-def display_all_routes_and_find_optimal():
+# Open route in browser
+def open_route_in_browser(route):
+    base_url = "https://www.google.com/maps/dir/"
+    waypoints = "/".join(route)
+    print("🕒 Opening route in Google Maps in 2 seconds...")
+    time.sleep(2)
+    webbrowser.open(base_url + waypoints)
+
+# TSP solver
+def find_optimal_route(matrix):
     start = "Nairobi"
-    other_towns = [town for town in towns if town != start]
+    others = [t for t in towns if t != start]
     min_distance = float('inf')
     best_route = []
+    summary = []
 
-    print("All Possible Routes:\n")
+    print("\nEvaluating all possible routes...\n")
 
-    for idx, perm in enumerate(permutations(other_towns)):
+    for idx, perm in enumerate(permutations(others)):
         route = [start] + list(perm) + [start]
-        distance = calculate_total_distance(route)
-        print(" -> ".join(route), f"= {distance} km")
+        total = calculate_total_distance(route, matrix)
+        readable_distance = f"{total:.1f} km" if total != float('inf') else "Unavailable"
+        summary.append([idx + 1, " → ".join(route), readable_distance])
 
-        # Plot only first few for speed (optional)
-        if idx < 3:  # remove limit to plot all
-            visualize_route(route, title=f"Route #{idx+1}: {distance} km", show_plot=False)
-
-        if distance < min_distance:
-            min_distance = distance
+        if total < min_distance:
+            min_distance = total
             best_route = route
 
-    # Final optimal route
-    print("\n" + "=" * 60)
-    print("Optimal Route:")
-    print(" -> ".join(best_route))
-    print(f"Total Distance: {min_distance} km")
-    print("=" * 60)
+    print(tabulate(summary, headers=["#", "Route", "Distance"], tablefmt="grid"))
 
-    visualize_route(best_route, title=f"Optimal Route: {min_distance} km", color='green')
+    print("\n" + "=" * 70)
+    if best_route:
+        print("✅ Optimal Route:")
+        print(" → ".join(best_route))
+        print(f"Total Distance: {min_distance:.1f} km")
+        plot_best_route(best_route, min_distance)
+        open_route_in_browser(best_route)
+    else:
+        print("❌ No valid route found.")
+    print("=" * 70)
 
-# Main execution
+# Run program
 if __name__ == "__main__":
     print_project_description()
-    display_all_routes_and_find_optimal()
+
+    API_KEY = 'AIzaSyBMQhiM9cac7e1UXIHUUy3ag82luY7LplM'  # Replace with your key
+    matrix = build_distance_matrix(API_KEY)
+
+    if matrix:
+        find_optimal_route(matrix)
+    else:
+        print("Failed to retrieve distance matrix. Check your API key or internet.")
