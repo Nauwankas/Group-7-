@@ -1,9 +1,9 @@
-import googlemaps
-from itertools import permutations
-import matplotlib.pyplot as plt
-from tabulate import tabulate
-import time
-import webbrowser
+import googlemaps #To get real road distances
+from itertools import permutations #To generate all possible routes
+import matplotlib.pyplot as plt  #To plot optimal route
+from tabulate import tabulate  #To display route data in table format
+import time # To add delays (e.g., before opening the browser)
+import webbrowser # To open the best route in your browser on Google Maps
 
 # Project description
 def print_project_description():
@@ -17,7 +17,7 @@ def print_project_description():
     print("- Return to Nairobi")
     print("- Find the shortest route using real road distances via Google Maps API\n")
 
-# Coordinates
+# Coordinates (longitude, latitude) for each town
 town_coordinates = {
     "Nairobi": (36.8219, -1.2921),
     "Meru": (37.6525, 0.0463),
@@ -27,21 +27,21 @@ town_coordinates = {
     "Nakuru": (36.0800, -0.3031)
 }
 
-towns = list(town_coordinates.keys())
+towns = list(town_coordinates.keys()) #Create a list of town names
 
 # Build distance matrix using coordinates
 def build_distance_matrix(api_key):
     gmaps = googlemaps.Client(key=api_key)
     distance_matrix = {town: {} for town in towns}
-    
-    for from_town in towns:
+
+    for from_town in towns: # Loop through each pair of towns to get the distance
         for to_town in towns:
             if from_town == to_town:
                 distance_matrix[from_town][to_town] = 0
                 continue
-            try:
-                result = gmaps.distance_matrix(
-                    origins=[town_coordinates[from_town][::-1]],
+            try:                
+                result = gmaps.distance_matrix(  
+                    origins=[town_coordinates[from_town][::-1]], # Google Maps expects coordinates in (lat, lng) format, so we reverse the tuple
                     destinations=[town_coordinates[to_town][::-1]],
                     mode="driving",
                     units="metric"
@@ -51,7 +51,7 @@ def build_distance_matrix(api_key):
                     distance = element['distance']['value'] / 1000  # meters to km
                     distance_matrix[from_town][to_town] = round(distance, 1)
                 else:
-                    distance_matrix[from_town][to_town] = float('inf')
+                    distance_matrix[from_town][to_town] = float('inf') # If API fails
             except Exception as e:
                 print(f"Error between {from_town} and {to_town}: {e}")
                 distance_matrix[from_town][to_town] = float('inf')
