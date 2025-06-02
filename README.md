@@ -14,15 +14,15 @@ A company wants to deliver its product to the following towns:
 The objective is to minimize the total travel distance while visiting each town once and returning to the starting point.
 
 #  Technology Used
-  1. Python 3.x
-  2. Google Maps Distance Matrix API
-  3. Libraries:
-  -  googlemaps
-  -  itertools
-  -  matplotlib
-  -  tabulate
-  -  time
-  -  webbrowser
+  1.Python 3.x
+  2.Google Maps Distance Matrix API
+  3.Libraries:
+  - googlemaps
+  - itertools
+  - matplotlib
+  - tabulate
+  - time
+  - webbrowser
 
 
 # Distance Matrix (in kilometers)
