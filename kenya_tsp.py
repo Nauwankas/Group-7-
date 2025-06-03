@@ -89,7 +89,7 @@ def plot_best_route(route, distance):
 def open_route_in_browser(route):
     base_url = "https://www.google.com/maps/dir/"
     waypoints = "/".join(route)
-    print("🕒 Opening route in Google Maps in 2 seconds...")
+    print(" Opening route in Google Maps in 2 seconds...")
     time.sleep(2)
     webbrowser.open(base_url + waypoints)
 
@@ -117,13 +117,13 @@ def find_optimal_route(matrix):
 
     print("\n" + "=" * 70)
     if best_route:
-        print("✅ Optimal Route:")
+        print(" Optimal Route:")
         print(" → ".join(best_route))
         print(f"Total Distance: {min_distance:.1f} km")
         plot_best_route(best_route, min_distance)
         open_route_in_browser(best_route)
     else:
-        print("❌ No valid route found.")
+        print(" No valid route found.")
     print("=" * 70)
 
 # Run program
