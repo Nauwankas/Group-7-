@@ -1,4 +1,4 @@
-import googlemaps #To get real road distances
+import googlemaps #To get real road distances using google maps
 from itertools import permutations #To generate all possible routes
 import matplotlib.pyplot as plt  #To plot optimal route
 from tabulate import tabulate  #To display route data in table format
@@ -130,7 +130,7 @@ def find_optimal_route(matrix):
 if __name__ == "__main__":
     print_project_description()
 
-    API_KEY = 'AIzaSyBMQhiM9cac7e1UXIHUUy3ag82luY7LplM'  # Replace with your key
+    API_KEY = 'AIzaSyBMQhiM9cac7e1UXIHUUy3ag82luY7LplM'  # Google maps API key
     matrix = build_distance_matrix(API_KEY)
 
     if matrix:
