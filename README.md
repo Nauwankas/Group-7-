@@ -17,12 +17,12 @@ The objective is to minimize the total travel distance while visiting each town 
   1.Python 3.x
   2.Google Maps Distance Matrix API
   3.Libraries:
-  - googlemaps
+  - google maps
   - itertools
   - matplotlib
   - tabulate
   - time
-  - webbrowser
+  - web browser
 
 
 # Distance Matrix (in kilometers)
