@@ -11,7 +11,7 @@ A company wants to deliver its product to the following towns:
 - Kericho
 - Nakuru
   
-The objective is to minimize the total travel distance while visiting each town once and returning to the starting point.
+The main objective is to minimize the total travel distance while visiting each town once and returning to the starting point.
 
 #  Technology Used
   1.Python 3.x
